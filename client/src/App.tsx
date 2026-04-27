@@ -8,6 +8,10 @@ import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
+import CustomerAccount from "./pages/CustomerAccount";
+import AdminProducts from "./pages/AdminProducts";
+import AdminCombos from "./pages/AdminCombos";
+import AdminPromotions from "./pages/AdminPromotions";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -16,7 +20,11 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/menu"} component={Menu} />
       <Route path={"/checkout"} component={Checkout} />
+      <Route path={"/account"} component={CustomerAccount} />
       <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/admin/products"} component={AdminProducts} />
+      <Route path={"/admin/combos"} component={AdminCombos} />
+      <Route path={"/admin/promotions"} component={AdminPromotions} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
