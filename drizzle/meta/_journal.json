@@ -1,5 +1,27 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1777324072518,
+      "tag": "0000_shocking_rawhide_kid",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1777326479011,
+      "tag": "0001_misty_thor",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777327776180,
+      "tag": "0002_wild_mole_man",
+      "breakpoints": true
+    }
+  ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE `loyaltyPrograms` MODIFY COLUMN `triggerValue` int NOT NULL DEFAULT 0;
