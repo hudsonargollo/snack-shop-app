@@ -4,7 +4,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, TrendingUp, Package, Users, DollarSign } from "lucide-react";
+import { Loader2, TrendingUp, Package, Users, DollarSign, ShoppingCart, BarChart3, Zap, Gift, Trophy } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function AdminDashboard() {
@@ -48,6 +48,28 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-slate-900 mb-8">Admin Dashboard</h1>
+
+        {/* Quick Navigation */}
+        <div className="flex flex-wrap gap-2 mb-8 pb-4 border-b">
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/products")}>
+            <Package className="w-4 h-4 mr-1" /> Products
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/combos")}>
+            <Package className="w-4 h-4 mr-1" /> Combos
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/promotions")}>
+            <Zap className="w-4 h-4 mr-1" /> Promotions
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/employees")}>
+            <Users className="w-4 h-4 mr-1" /> Employees
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/loyalty")}>
+            <Gift className="w-4 h-4 mr-1" /> Loyalty
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => (window.location.href = "/admin/raffles")}>
+            <Trophy className="w-4 h-4 mr-1" /> Raffles
+          </Button>
+        </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

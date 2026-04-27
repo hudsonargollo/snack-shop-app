@@ -12,6 +12,9 @@ import CustomerAccount from "./pages/CustomerAccount";
 import AdminProducts from "./pages/AdminProducts";
 import AdminCombos from "./pages/AdminCombos";
 import AdminPromotions from "./pages/AdminPromotions";
+import AdminEmployees from "./pages/AdminEmployees";
+import AdminRaffles from "./pages/AdminRaffles";
+import AdminLoyalty from "./pages/AdminLoyalty";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -25,6 +28,9 @@ function Router() {
       <Route path={"/admin/products"} component={AdminProducts} />
       <Route path={"/admin/combos"} component={AdminCombos} />
       <Route path={"/admin/promotions"} component={AdminPromotions} />
+      <Route path={"/admin/employees"} component={AdminEmployees} />
+      <Route path={"/admin/raffles"} component={AdminRaffles} />
+      <Route path={"/admin/loyalty"} component={AdminLoyalty} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
