@@ -46,7 +46,7 @@ export default function Menu() {
           </div>
           <Button variant="outline" className="gap-2">
             <ShoppingCart className="w-5 h-5" />
-            <span>Cart</span>
+            <span>Carrinho</span>
           </Button>
         </div>
       </header>
@@ -124,7 +124,7 @@ export default function Menu() {
               }`}
             >
               <span className="text-2xl">🎯</span>
-              <span className="text-sm font-medium">All</span>
+              <span className="text-sm font-medium">Todos</span>
             </button>
             {categories?.map((cat) => (
               <button
@@ -182,9 +182,9 @@ export default function Menu() {
 
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-500">
-                      Stock: {product.stock}
+                      Estoque: {product.stock}
                       {product.stock <= product.lowStockThreshold && (
-                        <span className="ml-2 text-red-500 font-semibold">Low!</span>
+                        <span className="ml-2 text-red-500 font-semibold">Baixo!</span>
                       )}
                     </span>
                   </div>
@@ -201,7 +201,7 @@ export default function Menu() {
                     className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
                     disabled={product.stock === 0}
                   >
-                    {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                    {product.stock === 0 ? "Sem Estoque" : "Adicionar ao Carrinho"}
                   </Button>
                 </div>
               </Card>

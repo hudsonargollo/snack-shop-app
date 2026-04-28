@@ -39,12 +39,12 @@ export default function Checkout() {
 
   const handleCreateOrder = async () => {
     if (!customerEmail || !customerName) {
-      toast.error("Please enter your email and name");
+      toast.error("Por favor, informe seu e-mail e nome");
       return;
     }
 
     if (cart.length === 0) {
-      toast.error("Your cart is empty");
+      toast.error("Seu carrinho está vazio");
       return;
     }
 
@@ -85,7 +85,7 @@ export default function Checkout() {
         setPaymentStatus("completed");
       }
     } catch (error) {
-      toast.error("Failed to create order");
+      toast.error("Falha ao criar pedido");
       console.error(error);
     } finally {
       setLoading(false);
@@ -99,10 +99,10 @@ export default function Checkout() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Payment Successful!</h1>
-          <p className="text-slate-600 mb-6">Your order has been confirmed and is being prepared.</p>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Pagamento Confirmado!</h1>
+          <p className="text-slate-600 mb-6">Seu pedido foi confirmado e está sendo preparado.</p>
           <div className="bg-slate-50 p-4 rounded-lg mb-6">
-            <p className="text-sm text-slate-600">Order ID</p>
+            <p className="text-sm text-slate-600">Número do Pedido</p>
             <p className="text-lg font-bold text-slate-900">ORD-{orderId}</p>
           </div>
           <Button
@@ -112,7 +112,7 @@ export default function Checkout() {
             }}
             className="w-full"
           >
-            Continue Shopping
+            Continuar Comprando
           </Button>
         </Card>
       </div>
@@ -122,12 +122,12 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">Checkout</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-8">Finalizar Pedido</h1>
 
         <div className="grid gap-6">
           {/* Order Summary */}
           <Card className="p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">Order Summary</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Resumo do Pedido</h2>
             <div className="space-y-3 mb-4">
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between text-slate-600">
@@ -148,25 +148,25 @@ export default function Checkout() {
 
           {/* Customer Info */}
           <Card className="p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">Customer Information</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Dados do Cliente</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nome</Label>
                 <Input
                   id="name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder="Seu nome"
                 />
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="your@email.com"
+                  placeholder="seu@email.com"
                 />
               </div>
             </div>
@@ -174,37 +174,36 @@ export default function Checkout() {
 
           {/* Payment Method */}
           <Card className="p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">Payment Method</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Forma de Pagamento</h2>
             <Tabs value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)}>
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="pix">PIX</TabsTrigger>
-                <TabsTrigger value="cash">Cash</TabsTrigger>
-                <TabsTrigger value="debit">Debit</TabsTrigger>
-                <TabsTrigger value="credit">Credit</TabsTrigger>
+                <TabsTrigger value="cash">Dinheiro</TabsTrigger>
+                <TabsTrigger value="debit">Débito</TabsTrigger>
+                <TabsTrigger value="credit">Crédito</TabsTrigger>
               </TabsList>
 
               <TabsContent value="pix" className="mt-4">
                 <p className="text-slate-600 mb-4">
-                  Scan the QR code with your banking app to pay with PIX. Payment will be confirmed
-                  automatically.
+                  Escaneie o QR code com o app do seu banco para pagar via PIX. O pagamento será confirmado automaticamente.
                 </p>
               </TabsContent>
 
               <TabsContent value="cash" className="mt-4">
                 <p className="text-slate-600">
-                  Please pay the amount at the counter when your order is ready.
+                  Pague o valor no balcão quando seu pedido estiver pronto.
                 </p>
               </TabsContent>
 
               <TabsContent value="debit" className="mt-4">
                 <p className="text-slate-600">
-                  Please use your debit card at the counter when your order is ready.
+                  Use seu cartão de débito no balcão quando seu pedido estiver pronto.
                 </p>
               </TabsContent>
 
               <TabsContent value="credit" className="mt-4">
                 <p className="text-slate-600">
-                  Please use your credit card at the counter when your order is ready.
+                  Use seu cartão de crédito no balcão quando seu pedido estiver pronto.
                 </p>
               </TabsContent>
             </Tabs>
@@ -213,7 +212,7 @@ export default function Checkout() {
           {/* PIX QR Code Display */}
           {paymentMethod === "pix" && qrCode && (
             <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Scan to Pay</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Escaneie para Pagar</h2>
               <div className="flex flex-col items-center gap-4">
                 <div className="bg-white p-4 rounded-lg">
                   <img src={qrCode} alt="PIX QR Code" className="w-64 h-64" />
@@ -222,17 +221,17 @@ export default function Checkout() {
                   variant="outline"
                   onClick={() => {
                     navigator.clipboard.writeText(qrCode);
-                    toast.success("QR Code copied!");
+                    toast.success("QR Code copiado!");
                   }}
                   className="gap-2"
                 >
                   <Copy className="w-4 h-4" />
-                  Copy QR Code
+                  Copiar QR Code
                 </Button>
                 {pollingActive && (
                   <div className="flex items-center gap-2 text-blue-600">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Waiting for payment confirmation...</span>
+                    <span>Aguardando confirmação do pagamento...</span>
                   </div>
                 )}
               </div>
@@ -248,10 +247,10 @@ export default function Checkout() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Processing...
+                Processando...
               </>
             ) : (
-              `Complete Order - R$ ${total.toFixed(2)}`
+              `Finalizar Pedido - R$ ${total.toFixed(2)}`
             )}
           </Button>
         </div>

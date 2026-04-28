@@ -8,7 +8,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50">
-      {/* Navigation Header */}
+      {/* Cabeçalho de Navegação */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -21,10 +21,10 @@ export default function Home() {
             {isAuthenticated ? (
               <>
                 <Button variant="ghost" onClick={() => (window.location.href = "/menu")}>
-                  Menu
+                  Cardápio
                 </Button>
                 <Button variant="ghost" onClick={() => (window.location.href = "/account")}>
-                  Account
+                  Minha Conta
                 </Button>
                 {user?.role === "admin" && (
                   <Button variant="ghost" onClick={() => (window.location.href = "/admin")}>
@@ -34,16 +34,15 @@ export default function Home() {
               </>
             ) : (
               <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-                <a href="/login">Sign In</a>
+                <a href="/login">Entrar</a>
               </Button>
             )}
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Seção Hero */}
       <section className="relative overflow-hidden">
-        {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full opacity-20 blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-amber-100 to-yellow-200 rounded-full opacity-20 blur-3xl"></div>
@@ -52,13 +51,13 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-              Fresh, Delicious
+              Frescos e Deliciosos
               <span className="block bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-                Snacks Delivered
+                Lanches na sua Mesa
               </span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Experience our premium selection of handcrafted snacks. Order online with real-time tracking, earn loyalty rewards, and enjoy exclusive deals.
+              Experimente nossa seleção premium de lanches artesanais. Peça online com rastreamento em tempo real, acumule pontos de fidelidade e aproveite ofertas exclusivas.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -67,7 +66,7 @@ export default function Home() {
                 className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-6 text-lg"
                 onClick={() => (window.location.href = "/menu")}
               >
-                Browse Menu
+                Ver Cardápio
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               {!isAuthenticated && (
@@ -77,122 +76,118 @@ export default function Home() {
                   className="px-8 py-6 text-lg border-2"
                   onClick={() => (window.location.href = "/login")}
                 >
-                  Sign In
+                  Entrar
                 </Button>
               )}
             </div>
 
-            {/* Trust badges */}
+            {/* Selos de confiança */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                   <span className="text-green-600 font-bold">✓</span>
                 </div>
-                <span>Fresh Daily</span>
+                <span>Frescos Todo Dia</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold">✓</span>
                 </div>
-                <span>Fast Delivery</span>
+                <span>Entrega Rápida</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                   <span className="text-purple-600 font-bold">✓</span>
                 </div>
-                <span>Loyalty Rewards</span>
+                <span>Programa de Fidelidade</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Seção de Diferenciais */}
       <section className="py-20 bg-white/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Why Choose Us</h2>
-            <p className="text-lg text-slate-600">Everything you need for a seamless snack shopping experience</p>
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">Por que nos escolher?</h2>
+            <p className="text-lg text-slate-600">Tudo que você precisa para uma experiência de compra perfeita</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Feature 1 */}
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center mb-4">
                 <ShoppingBag className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Easy Ordering</h3>
-              <p className="text-slate-600 text-sm">Browse our digital menu, customize your order, and checkout in seconds.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Pedido Fácil</h3>
+              <p className="text-slate-600 text-sm">Navegue pelo cardápio digital, personalize seu pedido e finalize em segundos.</p>
             </Card>
 
-            {/* Feature 2 */}
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Real-Time Tracking</h3>
-              <p className="text-slate-600 text-sm">Track your order status from preparation to ready for pickup.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Rastreamento em Tempo Real</h3>
+              <p className="text-slate-600 text-sm">Acompanhe o status do seu pedido desde o preparo até estar pronto para retirada.</p>
             </Card>
 
-            {/* Feature 3 */}
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Loyalty Program</h3>
-              <p className="text-slate-600 text-sm">Earn points on every purchase and unlock exclusive rewards.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Programa de Fidelidade</h3>
+              <p className="text-slate-600 text-sm">Acumule pontos a cada compra e desbloqueie recompensas exclusivas.</p>
             </Card>
 
-            {/* Feature 4 */}
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Secure Payments</h3>
-              <p className="text-slate-600 text-sm">Multiple payment options including PIX, cash, and card.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Pagamentos Seguros</h3>
+              <p className="text-slate-600 text-sm">Diversas formas de pagamento: PIX, dinheiro e cartão.</p>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Special Offer Banner */}
+      {/* Banner de Oferta Especial */}
       <section className="py-16 bg-gradient-to-r from-amber-500 to-orange-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            🎉 Special Offer for New Customers
+            🎉 Oferta Especial para Novos Clientes
           </h2>
           <p className="text-lg text-amber-50 mb-8">
-            Sign up today and get exclusive discounts on your first order!
+            Cadastre-se hoje e ganhe descontos exclusivos no seu primeiro pedido!
           </p>
           <Button
             size="lg"
             className="bg-white text-amber-600 hover:bg-slate-100 px-8 py-6 text-lg font-semibold"
             onClick={() => (window.location.href = "/login")}
           >
-            Get Started Now
+            Começar Agora
           </Button>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Seção CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-slate-900 mb-6">Ready to Order?</h2>
+          <h2 className="text-4xl font-bold text-slate-900 mb-6">Pronto para Pedir?</h2>
           <p className="text-lg text-slate-600 mb-8">
-            Start browsing our delicious menu and place your first order today.
+            Explore nosso cardápio delicioso e faça seu primeiro pedido hoje.
           </p>
           <Button
             size="lg"
             className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-6 text-lg"
             onClick={() => (window.location.href = "/menu")}
           >
-            View Menu
+            Ver Cardápio
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Rodapé */}
       <footer className="bg-slate-900 text-slate-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -203,32 +198,32 @@ export default function Home() {
                 </div>
                 <span className="font-bold text-white">Snack Shop</span>
               </div>
-              <p className="text-sm">Premium snacks delivered with care.</p>
+              <p className="text-sm">Lanches premium com muito carinho.</p>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Quick Links</h4>
+              <h4 className="font-bold text-white mb-4">Links Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="/menu" className="hover:text-amber-500 transition">Menu</a></li>
-                <li><a href="/account" className="hover:text-amber-500 transition">My Account</a></li>
+                <li><a href="/menu" className="hover:text-amber-500 transition">Cardápio</a></li>
+                <li><a href="/account" className="hover:text-amber-500 transition">Minha Conta</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Support</h4>
+              <h4 className="font-bold text-white mb-4">Suporte</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-amber-500 transition">Contact Us</a></li>
-                <li><a href="#" className="hover:text-amber-500 transition">FAQ</a></li>
+                <li><a href="#" className="hover:text-amber-500 transition">Fale Conosco</a></li>
+                <li><a href="#" className="hover:text-amber-500 transition">Perguntas Frequentes</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-amber-500 transition">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-amber-500 transition">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-amber-500 transition">Política de Privacidade</a></li>
+                <li><a href="#" className="hover:text-amber-500 transition">Termos de Uso</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-slate-700 pt-8 text-center text-sm">
-            <p>&copy; 2026 Snack Shop. All rights reserved.</p>
+            <p>&copy; 2026 Snack Shop. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

@@ -33,14 +33,14 @@ export default function CustomerAccount() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">My Account</h1>
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">Minha Conta</h1>
 
-        {/* Loyalty & Raffle Summary */}
+        {/* Resumo de Fidelidade e Sorteios */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm">Loyalty Points</p>
+                <p className="text-slate-600 text-sm">Pontos de Fidelidade</p>
                 <p className="text-3xl font-bold text-amber-600">{loyaltyPoints?.totalPoints || 0}</p>
               </div>
               <Gift className="w-8 h-8 text-amber-500" />
@@ -50,7 +50,7 @@ export default function CustomerAccount() {
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm">Raffle Tickets</p>
+                <p className="text-slate-600 text-sm">Tickets de Sorteio</p>
                 <p className="text-3xl font-bold text-blue-600">{raffleTickets?.length || 0}</p>
               </div>
               <Ticket className="w-8 h-8 text-blue-500" />
@@ -59,7 +59,7 @@ export default function CustomerAccount() {
 
           <Card className="p-6">
             <div>
-              <p className="text-slate-600 text-sm mb-2">Active Rewards</p>
+              <p className="text-slate-600 text-sm mb-2">Recompensas Ativas</p>
               <div className="space-y-1">
                 {loyaltyPrograms?.slice(0, 2).map((prog) => (
                   <div key={prog.id} className="text-xs text-slate-600">
@@ -71,18 +71,18 @@ export default function CustomerAccount() {
           </Card>
         </div>
 
-        {/* Tabs */}
+        {/* Abas */}
         <Tabs defaultValue="orders" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="orders">Order History</TabsTrigger>
-            <TabsTrigger value="rewards">Loyalty Rewards</TabsTrigger>
-            <TabsTrigger value="raffles">Raffle Tickets</TabsTrigger>
+            <TabsTrigger value="orders">Histórico de Pedidos</TabsTrigger>
+            <TabsTrigger value="rewards">Programa de Fidelidade</TabsTrigger>
+            <TabsTrigger value="raffles">Tickets de Sorteio</TabsTrigger>
           </TabsList>
 
-          {/* Order History */}
+          {/* Histórico de Pedidos */}
           <TabsContent value="orders">
             <Card className="p-6">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Your Orders</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Seus Pedidos</h2>
               {ordersLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
@@ -99,7 +99,7 @@ export default function CustomerAccount() {
                         <div>
                           <p className="font-semibold text-slate-900">{order.orderNumber}</p>
                           <p className="text-sm text-slate-600">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {new Date(order.createdAt).toLocaleDateString("pt-BR")}
                           </p>
                         </div>
                         <div className="text-right">
@@ -115,7 +115,11 @@ export default function CustomerAccount() {
                                 : "bg-slate-100 text-slate-700"
                             }`}
                           >
-                            {order.status}
+                            {order.status === "completed" ? "Concluído"
+                              : order.status === "ready" ? "Pronto"
+                              : order.status === "preparing" ? "Preparando"
+                              : order.status === "cancelled" ? "Cancelado"
+                              : "Pendente"}
                           </Badge>
                         </div>
                       </div>
@@ -123,20 +127,20 @@ export default function CustomerAccount() {
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-600 text-center py-8">No orders yet. Start shopping!</p>
+                <p className="text-slate-600 text-center py-8">Nenhum pedido ainda. Comece a comprar!</p>
               )}
             </Card>
 
-            {/* Order Details */}
+            {/* Detalhes do Pedido */}
             {selectedOrder && (
               <Card className="p-6 mt-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Order Details: {selectedOrder.orderNumber}</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Detalhes do Pedido: {selectedOrder.orderNumber}</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-slate-600">Order Date</p>
+                      <p className="text-sm text-slate-600">Data do Pedido</p>
                       <p className="font-semibold text-slate-900">
-                        {new Date(selectedOrder.createdAt).toLocaleString()}
+                        {new Date(selectedOrder.createdAt).toLocaleString("pt-BR")}
                       </p>
                     </div>
                     <div>
@@ -144,11 +148,11 @@ export default function CustomerAccount() {
                       <Badge className="mt-1">{selectedOrder.status}</Badge>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Payment Method</p>
+                      <p className="text-sm text-slate-600">Forma de Pagamento</p>
                       <p className="font-semibold text-slate-900 capitalize">{selectedOrder.paymentMethod}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Payment Status</p>
+                      <p className="text-sm text-slate-600">Status do Pagamento</p>
                       <Badge
                         className={
                           selectedOrder.paymentStatus === "completed"
@@ -156,16 +160,15 @@ export default function CustomerAccount() {
                             : "bg-yellow-100 text-yellow-700"
                         }
                       >
-                        {selectedOrder.paymentStatus}
+                        {selectedOrder.paymentStatus === "completed" ? "Pago" : "Pendente"}
                       </Badge>
                     </div>
                   </div>
 
                   <div className="border-t pt-4">
-                    <p className="text-sm text-slate-600 mb-2">Items</p>
+                    <p className="text-sm text-slate-600 mb-2">Itens</p>
                     <div className="space-y-2">
-                      {/* Items would be fetched via trpc.orders.items */}
-                      <p className="text-slate-600 text-sm">Order items will be displayed here</p>
+                      <p className="text-slate-600 text-sm">Os itens do pedido serão exibidos aqui</p>
                     </div>
                   </div>
 
@@ -180,10 +183,10 @@ export default function CustomerAccount() {
             )}
           </TabsContent>
 
-          {/* Loyalty Rewards */}
+          {/* Programa de Fidelidade */}
           <TabsContent value="rewards">
             <Card className="p-6">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Active Loyalty Programs</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Programas de Fidelidade Ativos</h2>
               {loyaltyPrograms && loyaltyPrograms.length > 0 ? (
                 <div className="space-y-4">
                   {loyaltyPrograms.map((prog) => (
@@ -196,24 +199,24 @@ export default function CustomerAccount() {
                       </div>
                       <div className="bg-slate-50 p-3 rounded text-sm text-slate-600">
                         <p>
-                          <strong>How it works:</strong> {prog.triggerType === "purchase_count"
-                            ? `Earn rewards after ${prog.triggerValue} purchases`
-                            : `Earn rewards after spending R$ ${prog.triggerValue}`}
+                          <strong>Como funciona:</strong> {prog.triggerType === "purchase_count"
+                            ? `Ganhe recompensas após ${prog.triggerValue} compras`
+                            : `Ganhe recompensas após gastar R$ ${prog.triggerValue}`}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-600 text-center py-8">No active loyalty programs at this time.</p>
+                <p className="text-slate-600 text-center py-8">Nenhum programa de fidelidade ativo no momento.</p>
               )}
             </Card>
           </TabsContent>
 
-          {/* Raffle Tickets */}
+          {/* Tickets de Sorteio */}
           <TabsContent value="raffles">
             <Card className="p-6">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Your Raffle Tickets</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Seus Tickets de Sorteio</h2>
               {raffleTickets && raffleTickets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {raffleTickets.map((ticket) => (
@@ -223,10 +226,10 @@ export default function CustomerAccount() {
                           <h3 className="font-semibold text-slate-900">Ticket #{ticket.ticketNumber}</h3>
                           <p className="text-sm text-slate-600">{ticket.raffleName}</p>
                         </div>
-                        <Badge className="bg-purple-100 text-purple-700">Active</Badge>
+                        <Badge className="bg-purple-100 text-purple-700">Ativo</Badge>
                       </div>
                       <p className="text-xs text-slate-600 mt-3">
-                        Earned: {new Date(ticket.createdAt).toLocaleDateString()}
+                        Obtido em: {new Date(ticket.createdAt).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
                   ))}
@@ -234,9 +237,9 @@ export default function CustomerAccount() {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-slate-600 mb-4">
-                    You don't have any raffle tickets yet. Purchase SANDUÍCHE NATURAL to earn tickets!
+                    Você ainda não tem tickets de sorteio. Compre um SANDUÍCHE NATURAL para ganhar tickets!
                   </p>
-                  <Button onClick={() => (window.location.href = "/menu")}>Browse Menu</Button>
+                  <Button onClick={() => (window.location.href = "/menu")}>Ver Cardápio</Button>
                 </div>
               )}
             </Card>
