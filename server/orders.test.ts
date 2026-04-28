@@ -10,7 +10,7 @@ function createAuthContext(role: "admin" | "clerk" | "user" = "user"): { ctx: Tr
     openId: "test-user",
     email: "test@example.com",
     name: "Test User",
-    loginMethod: "manus",
+    loginMethod: "password",
     role,
     createdAt: new Date(),
     updatedAt: new Date(),

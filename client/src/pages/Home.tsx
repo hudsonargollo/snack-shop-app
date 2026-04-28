@@ -2,7 +2,6 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, ShoppingBag, TrendingUp, Users, Zap } from "lucide-react";
-import { getLoginUrl } from "@/const";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -35,7 +34,7 @@ export default function Home() {
               </>
             ) : (
               <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-                <a href={getLoginUrl()}>Sign In</a>
+                <a href="/login">Sign In</a>
               </Button>
             )}
           </div>
@@ -76,7 +75,7 @@ export default function Home() {
                   size="lg"
                   variant="outline"
                   className="px-8 py-6 text-lg border-2"
-                  onClick={() => (window.location.href = getLoginUrl())}
+                  onClick={() => (window.location.href = "/login")}
                 >
                   Sign In
                 </Button>
@@ -168,7 +167,7 @@ export default function Home() {
           <Button
             size="lg"
             className="bg-white text-amber-600 hover:bg-slate-100 px-8 py-6 text-lg font-semibold"
-            onClick={() => (window.location.href = getLoginUrl())}
+            onClick={() => (window.location.href = "/login")}
           >
             Get Started Now
           </Button>
