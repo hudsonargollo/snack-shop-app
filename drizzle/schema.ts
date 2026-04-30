@@ -1,29 +1,36 @@
 import {
-  int,
-  mysqlEnum,
-  mysqlTable,
+  integer,
+  pgEnum,
+  pgTable,
   text,
   timestamp,
-  varchar,
-  decimal,
+  numeric,
   boolean,
-  json,
-  datetime,
-} from "drizzle-orm/mysql-core";
+  serial,
+} from "drizzle-orm/pg-core";
+
+// Enums
+export const roleEnum = pgEnum("role", ["admin", "clerk", "user"]);
+export const orderStatusEnum = pgEnum("order_status", ["pending", "preparing", "ready", "completed", "cancelled"]);
+export const paymentMethodEnum = pgEnum("payment_method", ["pix", "cash", "debit", "credit"]);
+export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed"]);
+export const rewardTypeEnum = pgEnum("reward_type", ["points", "discount", "freeItem"]);
+export const triggerTypeEnum = pgEnum("trigger_type", ["purchase_amount", "purchase_count", "points_threshold"]);
+export const transactionTypeEnum = pgEnum("transaction_type", ["earn", "redeem"]);
+export const discountTypeEnum = pgEnum("discount_type", ["percentage", "fixed"]);
 
 /**
  * Core user table backing auth flow.
- * Extended with role-based access control for admin, clerk, and customer roles.
  */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  openId: text("openId").notNull().unique(),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["admin", "clerk", "user"]).default("user").notNull(),
+  email: text("email"),
+  loginMethod: text("loginMethod"),
+  role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -33,14 +40,14 @@ export type InsertUser = typeof users.$inferInsert;
 /**
  * Product categories for menu organization
  */
-export const categories = mysqlTable("categories", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
   description: text("description"),
-  iconUrl: text("iconUrl"), // URL to circle icon
-  displayOrder: int("displayOrder").default(0).notNull(),
+  iconUrl: text("iconUrl"),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Category = typeof categories.$inferSelect;
@@ -49,20 +56,20 @@ export type InsertCategory = typeof categories.$inferInsert;
 /**
  * Products with pricing, cost, and stock tracking
  */
-export const products = mysqlTable("products", {
-  id: int("id").autoincrement().primaryKey(),
-  categoryId: int("categoryId").notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("categoryId").notNull(),
+  name: text("name").notNull(),
   description: text("description"),
-  imageUrl: text("imageUrl"), // Product image URL
-  costPrice: decimal("costPrice", { precision: 10, scale: 2 }).notNull(), // Cost of goods
-  salePrice: decimal("salePrice", { precision: 10, scale: 2 }).notNull(), // Selling price
-  stock: int("stock").default(0).notNull(),
-  lowStockThreshold: int("lowStockThreshold").default(5).notNull(),
+  imageUrl: text("imageUrl"),
+  costPrice: numeric("costPrice", { precision: 10, scale: 2 }).notNull(),
+  salePrice: numeric("salePrice", { precision: 10, scale: 2 }).notNull(),
+  stock: integer("stock").default(0).notNull(),
+  lowStockThreshold: integer("lowStockThreshold").default(5).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
-  displayOrder: int("displayOrder").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Product = typeof products.$inferSelect;
@@ -71,16 +78,16 @@ export type InsertProduct = typeof products.$inferInsert;
 /**
  * Combos - bundles of multiple products with custom pricing
  */
-export const combos = mysqlTable("combos", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const combos = pgTable("combos", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
   description: text("description"),
   imageUrl: text("imageUrl"),
-  basePrice: decimal("basePrice", { precision: 10, scale: 2 }).notNull(),
+  basePrice: numeric("basePrice", { precision: 10, scale: 2 }).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
-  displayOrder: int("displayOrder").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Combo = typeof combos.$inferSelect;
@@ -89,12 +96,12 @@ export type InsertCombo = typeof combos.$inferInsert;
 /**
  * Combo items - products included in a combo
  */
-export const comboItems = mysqlTable("comboItems", {
-  id: int("id").autoincrement().primaryKey(),
-  comboId: int("comboId").notNull(),
-  productId: int("productId").notNull(),
-  quantity: int("quantity").default(1).notNull(),
-  priceAdjustment: decimal("priceAdjustment", { precision: 10, scale: 2 }).default(0).notNull(),
+export const comboItems = pgTable("comboItems", {
+  id: serial("id").primaryKey(),
+  comboId: integer("comboId").notNull(),
+  productId: integer("productId").notNull(),
+  quantity: integer("quantity").default(1).notNull(),
+  priceAdjustment: numeric("priceAdjustment", { precision: 10, scale: 2 }).default("0").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -104,22 +111,20 @@ export type InsertComboItem = typeof comboItems.$inferInsert;
 /**
  * Orders - customer purchases
  */
-export const orders = mysqlTable("orders", {
-  id: int("id").autoincrement().primaryKey(),
-  customerId: int("customerId"),
-  orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(),
-  status: mysqlEnum("status", ["pending", "preparing", "ready", "completed", "cancelled"])
-    .default("pending")
-    .notNull(),
-  paymentMethod: mysqlEnum("paymentMethod", ["pix", "cash", "debit", "credit"]).notNull(),
-  paymentStatus: mysqlEnum("paymentStatus", ["pending", "completed", "failed"]).default("pending").notNull(),
-  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
-  discount: decimal("discount", { precision: 10, scale: 2 }).default(0).notNull(),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
-  mercadoPagoPaymentId: varchar("mercadoPagoPaymentId", { length: 255 }),
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  customerId: integer("customerId"),
+  orderNumber: text("orderNumber").notNull().unique(),
+  status: orderStatusEnum("status").default("pending").notNull(),
+  paymentMethod: paymentMethodEnum("paymentMethod").notNull(),
+  paymentStatus: paymentStatusEnum("paymentStatus").default("pending").notNull(),
+  subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
+  discount: numeric("discount", { precision: 10, scale: 2 }).default("0").notNull(),
+  total: numeric("total", { precision: 10, scale: 2 }).notNull(),
+  mercadoPagoPaymentId: text("mercadoPagoPaymentId"),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   completedAt: timestamp("completedAt"),
 });
 
@@ -129,14 +134,14 @@ export type InsertOrder = typeof orders.$inferInsert;
 /**
  * Order items - individual products/combos in an order
  */
-export const orderItems = mysqlTable("orderItems", {
-  id: int("id").autoincrement().primaryKey(),
-  orderId: int("orderId").notNull(),
-  productId: int("productId"),
-  comboId: int("comboId"),
-  quantity: int("quantity").default(1).notNull(),
-  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
-  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+export const orderItems = pgTable("orderItems", {
+  id: serial("id").primaryKey(),
+  orderId: integer("orderId").notNull(),
+  productId: integer("productId"),
+  comboId: integer("comboId"),
+  quantity: integer("quantity").default(1).notNull(),
+  unitPrice: numeric("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -146,17 +151,17 @@ export type InsertOrderItem = typeof orderItems.$inferInsert;
 /**
  * Customers - registered users with loyalty tracking
  */
-export const customers = mysqlTable("customers", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId"),
-  name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 320 }).unique(),
-  phone: varchar("phone", { length: 20 }),
-  loyaltyPoints: int("loyaltyPoints").default(0).notNull(),
-  totalSpent: decimal("totalSpent", { precision: 12, scale: 2 }).default(0).notNull(),
-  totalOrders: int("totalOrders").default(0).notNull(),
+export const customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId"),
+  name: text("name").notNull(),
+  email: text("email").unique(),
+  phone: text("phone"),
+  loyaltyPoints: integer("loyaltyPoints").default(0).notNull(),
+  totalSpent: numeric("totalSpent", { precision: 12, scale: 2 }).default("0").notNull(),
+  totalOrders: integer("totalOrders").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Customer = typeof customers.$inferSelect;
@@ -165,17 +170,17 @@ export type InsertCustomer = typeof customers.$inferInsert;
 /**
  * Loyalty programs - configurable reward campaigns
  */
-export const loyaltyPrograms = mysqlTable("loyaltyPrograms", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const loyaltyPrograms = pgTable("loyaltyPrograms", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
   description: text("description"),
-  rewardType: mysqlEnum("rewardType", ["points", "discount", "freeItem"]).notNull(),
-  triggerType: mysqlEnum("triggerType", ["purchase_amount", "purchase_count", "points_threshold"]).notNull(),
-  triggerValue: int("triggerValue").default(0).notNull(), // e.g., 10 for "buy 10", 100 for "$100 spent"
-  rewardValue: decimal("rewardValue", { precision: 10, scale: 2 }).notNull(), // e.g., 1 free item or $10 discount
+  rewardType: rewardTypeEnum("rewardType").notNull(),
+  triggerType: triggerTypeEnum("triggerType").notNull(),
+  triggerValue: integer("triggerValue").default(0).notNull(),
+  rewardValue: numeric("rewardValue", { precision: 10, scale: 2 }).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type LoyaltyProgram = typeof loyaltyPrograms.$inferSelect;
@@ -184,14 +189,14 @@ export type InsertLoyaltyProgram = typeof loyaltyPrograms.$inferInsert;
 /**
  * Customer loyalty transactions - track points and rewards
  */
-export const loyaltyTransactions = mysqlTable("loyaltyTransactions", {
-  id: int("id").autoincrement().primaryKey(),
-  customerId: int("customerId").notNull(),
-  loyaltyProgramId: int("loyaltyProgramId"),
-  orderId: int("orderId"),
-  transactionType: mysqlEnum("transactionType", ["earn", "redeem"]).notNull(),
-  pointsAmount: int("pointsAmount").notNull(),
-  rewardApplied: text("rewardApplied"), // JSON description of reward
+export const loyaltyTransactions = pgTable("loyaltyTransactions", {
+  id: serial("id").primaryKey(),
+  customerId: integer("customerId").notNull(),
+  loyaltyProgramId: integer("loyaltyProgramId"),
+  orderId: integer("orderId"),
+  transactionType: transactionTypeEnum("transactionType").notNull(),
+  pointsAmount: integer("pointsAmount").notNull(),
+  rewardApplied: text("rewardApplied"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -201,12 +206,12 @@ export type InsertLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;
 /**
  * Raffle tickets - issued for SANDUÍCHE NATURAL purchases
  */
-export const raffleTickets = mysqlTable("raffleTickets", {
-  id: int("id").autoincrement().primaryKey(),
-  raffleId: int("raffleId").notNull(),
-  customerId: int("customerId").notNull(),
-  orderId: int("orderId").notNull(),
-  ticketNumber: varchar("ticketNumber", { length: 50 }).notNull().unique(),
+export const raffleTickets = pgTable("raffleTickets", {
+  id: serial("id").primaryKey(),
+  raffleId: integer("raffleId").notNull(),
+  customerId: integer("customerId").notNull(),
+  orderId: integer("orderId").notNull(),
+  ticketNumber: text("ticketNumber").notNull().unique(),
   isWinner: boolean("isWinner").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -217,18 +222,18 @@ export type InsertRaffleTicket = typeof raffleTickets.$inferInsert;
 /**
  * Raffles - admin-managed raffle campaigns
  */
-export const raffles = mysqlTable("raffles", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const raffles = pgTable("raffles", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
   description: text("description"),
-  triggerProductName: varchar("triggerProductName", { length: 255 }).notNull(), // e.g., "SANDUÍCHE NATURAL"
-  startDate: datetime("startDate").notNull(),
-  endDate: datetime("endDate").notNull(),
-  winnerCount: int("winnerCount").default(1).notNull(),
+  triggerProductName: text("triggerProductName").notNull(),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
+  winnerCount: integer("winnerCount").default(1).notNull(),
   prize: text("prize"),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Raffle = typeof raffles.$inferSelect;
@@ -237,20 +242,20 @@ export type InsertRaffle = typeof raffles.$inferInsert;
 /**
  * Promotional campaigns - for hero slider
  */
-export const promotions = mysqlTable("promotions", {
-  id: int("id").autoincrement().primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
+export const promotions = pgTable("promotions", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
   description: text("description"),
   imageUrl: text("imageUrl").notNull(),
-  discountType: mysqlEnum("discountType", ["percentage", "fixed"]).notNull(),
-  discountValue: decimal("discountValue", { precision: 10, scale: 2 }).notNull(),
-  applicableProductIds: text("applicableProductIds"), // JSON array of product IDs
-  startDate: datetime("startDate").notNull(),
-  endDate: datetime("endDate").notNull(),
+  discountType: discountTypeEnum("discountType").notNull(),
+  discountValue: numeric("discountValue", { precision: 10, scale: 2 }).notNull(),
+  applicableProductIds: text("applicableProductIds"),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
   isActive: boolean("isActive").default(true).notNull(),
-  displayOrder: int("displayOrder").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Promotion = typeof promotions.$inferSelect;
@@ -259,15 +264,15 @@ export type InsertPromotion = typeof promotions.$inferInsert;
 /**
  * Expenses - track business costs
  */
-export const expenses = mysqlTable("expenses", {
-  id: int("id").autoincrement().primaryKey(),
-  category: varchar("category", { length: 255 }).notNull(), // e.g., "Rent", "Utilities", "Supplies"
+export const expenses = pgTable("expenses", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
   description: text("description"),
-  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
-  expenseDate: datetime("expenseDate").notNull(),
-  createdBy: int("createdBy").notNull(), // Employee ID
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  expenseDate: timestamp("expenseDate").notNull(),
+  createdBy: integer("createdBy").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Expense = typeof expenses.$inferSelect;
@@ -276,12 +281,12 @@ export type InsertExpense = typeof expenses.$inferInsert;
 /**
  * Stock adjustments - track inventory changes
  */
-export const stockAdjustments = mysqlTable("stockAdjustments", {
-  id: int("id").autoincrement().primaryKey(),
-  productId: int("productId").notNull(),
-  quantityChange: int("quantityChange").notNull(), // Positive or negative
-  reason: varchar("reason", { length: 255 }).notNull(), // "order", "adjustment", "damage", etc.
-  adjustedBy: int("adjustedBy").notNull(), // Employee ID
+export const stockAdjustments = pgTable("stockAdjustments", {
+  id: serial("id").primaryKey(),
+  productId: integer("productId").notNull(),
+  quantityChange: integer("quantityChange").notNull(),
+  reason: text("reason").notNull(),
+  adjustedBy: integer("adjustedBy").notNull(),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
