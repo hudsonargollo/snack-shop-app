@@ -10,7 +10,6 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Enums
-export const roleEnum = pgEnum("role", ["admin", "clerk", "user"]);
 export const orderStatusEnum = pgEnum("order_status", ["pending", "preparing", "ready", "completed", "cancelled"]);
 export const paymentMethodEnum = pgEnum("payment_method", ["pix", "cash", "debit", "credit"]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed"]);
@@ -30,7 +29,7 @@ export const users = pgTable("users", {
   whatsapp: text("whatsapp"),
   passwordHash: text("passwordHash"),
   loginMethod: text("loginMethod"),
-  role: roleEnum("role").default("user").notNull(),
+  role: text("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
