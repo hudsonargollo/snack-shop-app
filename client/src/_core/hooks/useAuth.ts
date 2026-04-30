@@ -1,15 +1,9 @@
 import { trpc } from "@/lib/trpc";
+import { supabase } from "@/lib/supabase";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useMemo } from "react";
 
-type UseAuthOptions = {
-  redirectOnUnauthenticated?: boolean;
-  redirectPath?: string;
-};
-
-export function useAuth(options?: UseAuthOptions) {
-  const { redirectOnUnauthenticated = false, redirectPath = "/login" } =
-    options ?? {};
+export function useAuth() {
   const utils = trpc.useUtils();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
@@ -17,15 +11,16 @@ export function useAuth(options?: UseAuthOptions) {
     refetchOnWindowFocus: false,
   });
 
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      utils.auth.me.setData(undefined, null);
-    },
-  });
-
   const logout = useCallback(async () => {
     try {
-      await logoutMutation.mutateAsync();
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      // Clear the cookie
+      document.cookie = "sb-access-token=; path=/; max-age=0";
+      // Invalidate tRPC cache
+      utils.auth.me.setData(undefined, null);
+      await utils.auth.me.invalidate();
+      window.location.href = "/login";
     } catch (error: unknown) {
       if (
         error instanceof TRPCClientError &&
@@ -34,26 +29,17 @@ export function useAuth(options?: UseAuthOptions) {
         return;
       }
       throw error;
-    } finally {
-      utils.auth.me.setData(undefined, null);
-      await utils.auth.me.invalidate();
     }
-  }, [logoutMutation, utils]);
+  }, [utils]);
 
   const state = useMemo(() => {
     return {
       user: meQuery.data ?? null,
-      loading: meQuery.isLoading || logoutMutation.isPending,
-      error: meQuery.error ?? logoutMutation.error ?? null,
+      loading: meQuery.isLoading,
+      error: meQuery.error ?? null,
       isAuthenticated: Boolean(meQuery.data),
     };
-  }, [
-    meQuery.data,
-    meQuery.error,
-    meQuery.isLoading,
-    logoutMutation.error,
-    logoutMutation.isPending,
-  ]);
+  }, [meQuery.data, meQuery.error, meQuery.isLoading]);
 
   return {
     ...state,
