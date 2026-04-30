@@ -15,6 +15,24 @@ function formatWhatsapp(raw: string): string {
   return `+55${digits}`;
 }
 
+async function syncUserToDb(userId: string, name: string, email: string, whatsapp: string | null) {
+  // Upsert into our users table directly via Supabase client
+  const openId = `supabase_${userId}`;
+  await supabase.from("users").upsert(
+    {
+      openId,
+      name,
+      email,
+      whatsapp,
+      loginMethod: "password",
+      role: "user",
+      lastSignedIn: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    { onConflict: "openId" }
+  );
+}
+
 export default function Login() {
   const [mode, setMode] = useState<Mode>("login");
   const [form, setForm] = useState({ name: "", email: "", whatsapp: "", password: "" });
@@ -51,13 +69,7 @@ export default function Login() {
           return;
         }
 
-        if (data.session) {
-          document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=None; Secure`;
-          toast.success("Conta criada com sucesso!");
-          window.location.href = "/";
-          return;
-        }
-
+        // Sign in to get a valid session
         const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
@@ -69,8 +81,11 @@ export default function Login() {
           return;
         }
 
+        // Sync user to our users table
+        await syncUserToDb(loginData.user.id, form.name, form.email, whatsapp);
+
         document.cookie = `sb-access-token=${loginData.session.access_token}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=None; Secure`;
-        toast.success("Bem-vindo!");
+        toast.success("Conta criada com sucesso!");
         window.location.href = "/";
 
       } else {
@@ -92,6 +107,22 @@ export default function Login() {
           toast.error("Falha ao criar sessão");
           return;
         }
+
+        // Sync lastSignedIn on login
+        const openId = `supabase_${data.user.id}`;
+        await supabase.from("users").upsert(
+          {
+            openId,
+            email: data.user.email,
+            name: data.user.user_metadata?.name ?? null,
+            whatsapp: data.user.user_metadata?.whatsapp ?? null,
+            loginMethod: "password",
+            role: "user",
+            lastSignedIn: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          { onConflict: "openId" }
+        );
 
         document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=None; Secure`;
         toast.success("Bem-vindo!");
@@ -172,7 +203,7 @@ export default function Login() {
                       autoComplete="tel"
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">DDD + número, sem espaços. Ex: 11999999999</p>
+                  <p className="text-xs text-slate-500 mt-1">DDD + número. Ex: 11999999999</p>
                 </div>
               </>
             )}
