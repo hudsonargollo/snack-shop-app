@@ -16,9 +16,8 @@ function formatWhatsapp(raw: string): string {
 }
 
 async function syncUserToDb(userId: string, name: string, email: string, whatsapp: string | null) {
-  // Upsert into our users table directly via Supabase client
   const openId = `supabase_${userId}`;
-  await supabase.from("users").upsert(
+  const { error } = await supabase.from("users").upsert(
     {
       openId,
       name,
@@ -31,6 +30,10 @@ async function syncUserToDb(userId: string, name: string, email: string, whatsap
     },
     { onConflict: "openId" }
   );
+  if (error) {
+    console.error("[syncUserToDb] error:", JSON.stringify(error));
+    toast.error(`Erro ao salvar perfil: ${error.message}`);
+  }
 }
 
 export default function Login() {
