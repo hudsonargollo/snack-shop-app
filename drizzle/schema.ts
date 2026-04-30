@@ -27,6 +27,7 @@ export const users = pgTable("users", {
   openId: text("openId").notNull().unique(),
   name: text("name"),
   email: text("email"),
+  whatsapp: text("whatsapp"),
   passwordHash: text("passwordHash"),
   loginMethod: text("loginMethod"),
   role: roleEnum("role").default("user").notNull(),

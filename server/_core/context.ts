@@ -37,8 +37,9 @@ async function getUserFromRequest(req: CreateExpressContextOptions["req"]): Prom
     // Sync user to our users table
     await upsertUser({
       openId,
-      name: supaUser.user_metadata?.name ?? supaUser.phone ?? supaUser.email ?? null,
+      name: supaUser.user_metadata?.name ?? supaUser.email ?? null,
       email: supaUser.email ?? null,
+      whatsapp: supaUser.user_metadata?.whatsapp ?? null,
       loginMethod: supaUser.app_metadata?.provider ?? "password",
       lastSignedIn: new Date(),
     });

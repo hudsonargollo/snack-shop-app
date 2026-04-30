@@ -4,14 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShoppingBag, Loader2 } from "lucide-react";
+import { ShoppingBag, Loader2, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 type Mode = "login" | "register";
 
+function formatWhatsapp(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("55")) return `+${digits}`;
+  return `+55${digits}`;
+}
+
 export default function Login() {
   const [mode, setMode] = useState<Mode>("login");
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", whatsapp: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,24 +26,31 @@ export default function Login() {
 
     try {
       if (mode === "register") {
+        const whatsapp = form.whatsapp ? formatWhatsapp(form.whatsapp) : null;
+
+        if (whatsapp && !/^\+\d{10,15}$/.test(whatsapp)) {
+          toast.error("Número de WhatsApp inválido. Ex: 11999999999");
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: {
-            data: { name: form.name },
-            // Skip email confirmation for easier onboarding
-            emailRedirectTo: undefined,
+            data: { name: form.name, whatsapp },
           },
         });
 
         if (error) {
-          toast.error(error.message === "User already registered"
-            ? "Este e-mail já está cadastrado. Faça login."
-            : error.message);
+          toast.error(
+            error.message === "User already registered"
+              ? "Este e-mail já está cadastrado. Faça login."
+              : error.message
+          );
           return;
         }
 
-        // If session is returned immediately (email confirmation disabled), log in
         if (data.session) {
           document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=None; Secure`;
           toast.success("Conta criada com sucesso!");
@@ -45,7 +58,6 @@ export default function Login() {
           return;
         }
 
-        // Otherwise sign in directly
         const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
@@ -68,9 +80,11 @@ export default function Login() {
         });
 
         if (error) {
-          toast.error(error.message === "Invalid login credentials"
-            ? "E-mail ou senha incorretos"
-            : error.message);
+          toast.error(
+            error.message === "Invalid login credentials"
+              ? "E-mail ou senha incorretos"
+              : error.message
+          );
           return;
         }
 
@@ -93,7 +107,6 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mb-3 shadow-lg">
             <ShoppingBag className="w-8 h-8 text-white" />
@@ -105,15 +118,12 @@ export default function Login() {
         </div>
 
         <Card className="p-6 shadow-lg">
-          {/* Mode toggle */}
           <div className="flex rounded-lg bg-slate-100 p-1 mb-6">
             <button
               type="button"
               onClick={() => setMode("login")}
               className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                mode === "login"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
+                mode === "login" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               Entrar
@@ -122,9 +132,7 @@ export default function Login() {
               type="button"
               onClick={() => setMode("register")}
               className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                mode === "register"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
+                mode === "register" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               Criar Conta
@@ -133,18 +141,40 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
-              <div>
-                <Label htmlFor="name">Nome completo</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="João Silva"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  required
-                  autoComplete="name"
-                />
-              </div>
+              <>
+                <div>
+                  <Label htmlFor="name">Nome completo</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="João Silva"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    required
+                    autoComplete="name"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="whatsapp">
+                    WhatsApp{" "}
+                    <span className="text-slate-400 font-normal text-xs">(opcional)</span>
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                    <Input
+                      id="whatsapp"
+                      type="tel"
+                      placeholder="11999999999"
+                      value={form.whatsapp}
+                      onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                      className="pl-9"
+                      autoComplete="tel"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">DDD + número, sem espaços. Ex: 11999999999</p>
+                </div>
+              </>
             )}
 
             <div>
@@ -196,22 +226,14 @@ export default function Login() {
             {mode === "login" ? (
               <>
                 Não tem conta?{" "}
-                <button
-                  type="button"
-                  onClick={() => setMode("register")}
-                  className="text-amber-600 hover:text-amber-700 font-medium"
-                >
+                <button type="button" onClick={() => setMode("register")} className="text-amber-600 hover:text-amber-700 font-medium">
                   Cadastre-se
                 </button>
               </>
             ) : (
               <>
                 Já tem conta?{" "}
-                <button
-                  type="button"
-                  onClick={() => setMode("login")}
-                  className="text-amber-600 hover:text-amber-700 font-medium"
-                >
+                <button type="button" onClick={() => setMode("login")} className="text-amber-600 hover:text-amber-700 font-medium">
                   Entrar
                 </button>
               </>
