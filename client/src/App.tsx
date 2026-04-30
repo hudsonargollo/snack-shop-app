@@ -15,6 +15,7 @@ import AdminPromotions from "./pages/AdminPromotions";
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminRaffles from "./pages/AdminRaffles";
 import AdminLoyalty from "./pages/AdminLoyalty";
+import Login from "./pages/Login";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -31,6 +32,7 @@ function Router() {
       <Route path={"/admin/employees"} component={AdminEmployees} />
       <Route path={"/admin/raffles"} component={AdminRaffles} />
       <Route path={"/admin/loyalty"} component={AdminLoyalty} />
+      <Route path={"/login"} component={Login} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
