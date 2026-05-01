@@ -1,49 +1,87 @@
-import { trpc } from "@/lib/trpc";
 import { supabase } from "@/lib/supabase";
-import { TRPCClientError } from "@trpc/client";
-import { useCallback, useMemo } from "react";
+import { useEffect, useState } from "react";
+
+type AppUser = {
+  id: number;
+  openId: string;
+  name: string | null;
+  email: string | null;
+  whatsapp: string | null;
+  role: string;
+};
 
 export function useAuth() {
-  const utils = trpc.useUtils();
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const meQuery = trpc.auth.me.useQuery(undefined, {
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
+  useEffect(() => {
+    let mounted = true;
 
-  const logout = useCallback(async () => {
-    try {
-      // Sign out from Supabase
-      await supabase.auth.signOut();
-      // Clear the cookie
-      document.cookie = "sb-access-token=; path=/; max-age=0";
-      // Invalidate tRPC cache
-      utils.auth.me.setData(undefined, null);
-      await utils.auth.me.invalidate();
-      window.location.href = "/login";
-    } catch (error: unknown) {
-      if (
-        error instanceof TRPCClientError &&
-        error.data?.code === "UNAUTHORIZED"
-      ) {
-        return;
+    async function loadUser() {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const session = sessionData.session;
+
+        if (!session) {
+          if (mounted) { setUser(null); setLoading(false); }
+          return;
+        }
+
+        // Fetch user row from our public.users table
+        const openId = `supabase_${session.user.id}`;
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, openId, name, email, whatsapp, role")
+          .eq("openId", openId)
+          .single();
+
+        if (mounted) {
+          if (data && !error) {
+            setUser(data as AppUser);
+          } else {
+            // Row not synced yet — use session data with default role
+            setUser({
+              id: 0,
+              openId,
+              name: session.user.user_metadata?.name ?? null,
+              email: session.user.email ?? null,
+              whatsapp: session.user.user_metadata?.whatsapp ?? null,
+              role: "user",
+            });
+          }
+          setLoading(false);
+        }
+      } catch {
+        if (mounted) { setUser(null); setLoading(false); }
       }
-      throw error;
     }
-  }, [utils]);
 
-  const state = useMemo(() => {
-    return {
-      user: meQuery.data ?? null,
-      loading: meQuery.isLoading,
-      error: meQuery.error ?? null,
-      isAuthenticated: Boolean(meQuery.data),
+    loadUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      loadUser();
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
     };
-  }, [meQuery.data, meQuery.error, meQuery.isLoading]);
+  }, []);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    document.cookie = "sb-access-token=; path=/; max-age=0";
+    setUser(null);
+    window.location.href = "/login";
+  };
 
   return {
-    ...state,
-    refresh: () => meQuery.refetch(),
+    user,
+    loading,
+    error: null,
+    isAuthenticated: !!user,
+    refresh: () => {},
     logout,
   };
 }
