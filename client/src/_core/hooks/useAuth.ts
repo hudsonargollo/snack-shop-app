@@ -27,13 +27,32 @@ export function useAuth() {
           return;
         }
 
-        // Fetch user row from our public.users table
+        // Fetch user row from our public.users table — try openId first, then email
         const openId = `supabase_${session.user.id}`;
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from("users")
           .select("id, openId, name, email, whatsapp, role")
           .eq("openId", openId)
           .single();
+
+        // Fallback: match by email and update openId
+        if ((error || !data) && session.user.email) {
+          const { data: emailMatch } = await supabase
+            .from("users")
+            .select("id, openId, name, email, whatsapp, role")
+            .eq("email", session.user.email)
+            .single();
+
+          if (emailMatch) {
+            // Update the openId to match Supabase Auth
+            await supabase
+              .from("users")
+              .update({ openId })
+              .eq("email", session.user.email);
+            data = { ...emailMatch, openId };
+            error = null;
+          }
+        }
 
         if (mounted) {
           if (data && !error) {
